@@ -1,19 +1,18 @@
 package controller;
 
 import model.Equipe;
-import model.dao.DAOEquipe;
+import model.dao.IDAOEquipe;
 import view.MainFrame;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.util.List;
 
 public final class EquipeController {
-    private final DAOEquipe model; // Modèle DAO pour gérer les équipes
+    private final IDAOEquipe model; // Modèle DAO pour gérer les équipes
     private final DefaultListModel<String> equipeListModel; // Modèle pour la vue
     private final MainFrame mainFrame; // Référence à la MainFrame
 
-    public EquipeController(DAOEquipe model, DefaultListModel<String> equipeListModel, MainFrame mainFrame) {
+    public EquipeController(IDAOEquipe model, DefaultListModel<String> equipeListModel, MainFrame mainFrame) {
         this.model = model;
         this.equipeListModel = equipeListModel;
         this.mainFrame = mainFrame;
@@ -37,6 +36,7 @@ public final class EquipeController {
             mainFrame.showMessageDialog("Nouvelle équipe ajoutée avec succès !", JOptionPane.INFORMATION_MESSAGE);
         }
     }
+
     /**
      * Méthode pour modifier une équipe existante.
      */
@@ -110,6 +110,24 @@ public final class EquipeController {
 
     public Equipe getEquipeById(int id) {
         return model.getEquipeById(id);
+    }
+
+    public void handleAddEquipeAction(JButton ajouterEquipeBtn) {
+        ajouterEquipeBtn.addActionListener(e -> addEquipe());
+    }
+
+    public void handleEditEquipeAction(JButton modifierEquipeBtn, JList<String> equipeList) {
+        modifierEquipeBtn.addActionListener(e -> {
+            int selectedIndex = equipeList.getSelectedIndex();
+            editEquipe(selectedIndex);
+        });
+    }
+
+    public void handleDeleteEquipeAction(JButton supprimerEquipeBtn, JList<String> equipeList) {
+        supprimerEquipeBtn.addActionListener(e -> {
+            int selectedIndex = equipeList.getSelectedIndex();
+            deleteEquipe(selectedIndex);
+        });
     }
 
     /**

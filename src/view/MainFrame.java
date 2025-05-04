@@ -3,6 +3,7 @@ package view;
 import controller.EquipeController;
 import controller.JoueurController;
 import model.dao.DAOEquipe;
+import model.dao.IDAOEquipe;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +16,8 @@ public class MainFrame {
     private final JList<String> equipeList;
     private final EquipeController equipeController;
     private final JoueurController joueurController;
+    private final EquipeDialogManager equipeDialogManager;
+    private final JoueurDialogManager joueurDialogManager;
 
     public MainFrame() {
         // Initialisation de la fenêtre principale
@@ -148,22 +151,18 @@ public class MainFrame {
         // ================================
         // Création des DAO et contrôleurs
         // ================================
-        DAOEquipe daoEquipe = new DAOEquipe();
+        IDAOEquipe daoEquipe = new DAOEquipe();
+        equipeDialogManager = new EquipeDialogManager(frame);
+        joueurDialogManager = new JoueurDialogManager(frame);
 
         // Instanciation des contrôleurs avec passage de la MainFrame
         equipeController = new EquipeController(daoEquipe, equipeListModel, this);
         joueurController = new JoueurController(joueurTableModel, this);
 
         // Connexions des actions liées aux équipes
-        ajouterEquipeBtn.addActionListener(e -> equipeController.addEquipe());
-        modifierEquipeBtn.addActionListener(e -> {
-            int selectedIndex = equipeList.getSelectedIndex();
-            equipeController.editEquipe(selectedIndex);
-        });
-        supprimerEquipeBtn.addActionListener(e -> {
-            int selectedIndex = equipeList.getSelectedIndex();
-            equipeController.deleteEquipe(selectedIndex);
-        });
+        equipeController.handleAddEquipeAction(ajouterEquipeBtn);
+        equipeController.handleEditEquipeAction(modifierEquipeBtn, equipeList);
+        equipeController.handleDeleteEquipeAction(supprimerEquipeBtn, equipeList);
 
         // Connexions des actions liées aux joueurs
         ajouterJoueurBtn.addActionListener(e -> joueurController.addJoueur());
@@ -189,56 +188,6 @@ public class MainFrame {
         frame.setVisible(true);
     }
 
-    /**
-     * Ouvre un dialogue pour ajouter ou éditer une équipe.
-     *
-     * @param currentData Les données actuelles de l'équipe (null pour ajout).
-     * @return Les données remplies par l'utilisateur ou null si annulé.
-     */
-    public String[] openEquipeDialog(String[] currentData) {
-        EquipeDialog dialog = new EquipeDialog(frame, currentData);
-        dialog.setVisible(true);
-        return dialog.getEquipeData(); // Données remplies ou null si annulé
-    }
-
-    /**
-     * Ouvre un dialogue pour ajouter ou éditer un joueur.
-     *
-     * @param currentData Les données actuelles du joueur (null pour ajout).
-     * @return Les données remplies par l'utilisateur ou null si annulé.
-     */
-    public String[] openJoueurDialog(String[] currentData) {
-        JoueurDialog dialog = new JoueurDialog(frame, currentData);
-        dialog.setVisible(true);
-        return dialog.getJoueurData(); // Données remplies ou null si annulé
-    }
-
-    /**
-     * Affiche un message de confirmation "Oui / Non" à l'utilisateur.
-     *
-     * @param message Le message à afficher.
-     * @return {@code true} si l'utilisateur a confirmé
-     */
-    public boolean showConfirmationDialog(String message) {
-        int result = JOptionPane.showConfirmDialog(
-                frame,
-                message,
-                "Confirmation",
-                JOptionPane.YES_NO_OPTION
-        );
-        return result == JOptionPane.YES_OPTION;
-    }
-
-    /**
-     * Affiche un message simple à l'utilisateur.
-     *
-     * @param message Le contenu du message.
-     * @param type    Le type du message : par exemple, {@code JOptionPane.INFORMATION_MESSAGE}.
-     */
-    public void showMessageDialog(String message, int type) {
-        JOptionPane.showMessageDialog(frame, message, "Information", type);
-    }
-
     public int getSelectedEquipeIndex() {
         return equipeList.getSelectedIndex();
     }
@@ -250,5 +199,21 @@ public class MainFrame {
     public EquipeController getEquipeController() {
         return equipeController;
     }
-}
 
+    public String[] openEquipeDialog(String[] currentData) {
+        return equipeDialogManager.openEquipeDialog(currentData);
+    }
+
+    public String[] openJoueurDialog(String[] currentData) {
+        return joueurDialogManager.openJoueurDialog(currentData);
+    }
+
+    public void showMessageDialog(String message, int messageType) {
+        JOptionPane.showMessageDialog(frame, message, "Message", messageType);
+    }
+
+    public boolean showConfirmationDialog(String message) {
+        int result = JOptionPane.showConfirmDialog(frame, message, "Confirmation", JOptionPane.YES_NO_OPTION);
+        return result == JOptionPane.YES_OPTION;
+    }
+}

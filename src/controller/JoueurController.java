@@ -146,10 +146,13 @@ public final class JoueurController {
         }
 
         int joueurId = (int) joueurTableModel.getValueAt(selectedRow, 0);
-        Joueur joueur = equipe.getJoueurs().stream()
-                .filter(j -> j.getId() == joueurId)
-                .findFirst()
-                .orElse(null);
+        Joueur joueur = null;
+        for (Joueur j : equipe.getJoueurs()) {
+            if (j.getId() == joueurId) {
+                joueur = j;
+                break;
+            }
+        }
 
         if (joueur != null && mainFrame.showConfirmationDialog("Êtes-vous sûr de vouloir supprimer le joueur " + joueur.getNom() + " ?")) {
             equipe.supprimerJoueur(joueur);

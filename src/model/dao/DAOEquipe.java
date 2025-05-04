@@ -1,28 +1,24 @@
+// Fichier : src/model/dao/DAOEquipe.java
 package model.dao;
 
 import model.Equipe;
 import util.IdGenerator;
-
 import java.util.ArrayList;
+import java.util.List;
 
-public class DAOEquipe {
-    private final ArrayList<Equipe> equipes;
-    private final IdGenerator idGenerator; // Utilisation de l'IdGenerator
+public class DAOEquipe implements IDAOEquipe {
+    private final ArrayList<Equipe> equipes = new ArrayList<>();
+    private final IdGenerator idGenerator = new IdGenerator();
 
-    public DAOEquipe() {
-        equipes = new ArrayList<>();
-        idGenerator = new IdGenerator(); // Initialisation de l'IdGenerator
-    }
-
-    // Ajouter une équipe
+    @Override
     public int addEquipe(String nom, String pays, String ville) {
-        int id = idGenerator.generateId(); // Générer un ID unique
+        int id = idGenerator.generateId();
         Equipe equipe = new Equipe(id, nom, pays, ville);
         equipes.add(equipe);
         return id;
     }
 
-    // Mettre à jour une équipe existante
+    @Override
     public boolean updateEquipe(Equipe equipe) {
         for (int i = 0; i < equipes.size(); i++) {
             if (equipes.get(i).getId() == equipe.getId()) {
@@ -33,28 +29,18 @@ public class DAOEquipe {
         return false;
     }
 
-    // Supprimer une équipe par instance
+    @Override
     public boolean deleteEquipe(Equipe equipe) {
         return equipes.remove(equipe);
     }
 
-    // Récupérer une équipe par ID
+    @Override
     public Equipe getEquipeById(int id) {
-        for (Equipe equipe : equipes) {
-            if (equipe.getId() == id) {
-                return equipe;
-            }
-        }
-        return null;
-    }
-
-    // Récupérer la liste des équipes
-    public ArrayList<Equipe> getEquipes() {
-        return new ArrayList<>(equipes);
+        return equipes.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
     }
 
     @Override
-    public String toString() {
-        return "DAOEquipe{ equipes=" + equipes + " }";
+    public List<Equipe> getEquipes() {
+        return new ArrayList<>(equipes);
     }
 }
