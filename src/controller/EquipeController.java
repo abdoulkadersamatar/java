@@ -130,9 +130,6 @@ public final class EquipeController {
         });
     }
 
-    /**
-     * Charge et affiche toutes les équipes dans le modèle de liste.
-     */
     public void loadEquipes() {
         List<Equipe> equipes = model.getEquipes();
         equipeListModel.clear();
