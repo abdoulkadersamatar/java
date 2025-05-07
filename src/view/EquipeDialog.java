@@ -54,40 +54,45 @@ public class EquipeDialog extends JDialog {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                confirmed = true;
-                dispose();
-            }
+        okButton.addActionListener(e -> {
+            confirmed = true;
+            dispose();
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                confirmed = false;
-                dispose();
-            }
+        cancelButton.addActionListener(e -> {
+            confirmed = false;
+            dispose();
         });
     }
 
     public String[] getEquipeData() {
         if (confirmed) {
-            String nom = nomField.getText().trim();
-            String pays = paysField.getText().trim();
-            String ville = villeField.getText().trim();
+            try {
+                String nom = nomField.getText().trim();
+                String pays = paysField.getText().trim();
+                String ville = villeField.getText().trim();
 
-            if (nom.isEmpty() || pays.isEmpty() || ville.isEmpty()) {
+                // Vérification des champs
+                if (nom.length() < 3) {
+                    throw new IllegalArgumentException("Le nom doit contenir au moins 3 lettres.");
+                }
+                if (pays.length() < 3) {
+                    throw new IllegalArgumentException("Le pays doit contenir au moins 3 lettres.");
+                }
+                if (ville.length() < 3) {
+                    throw new IllegalArgumentException("La ville doit contenir au moins 3 lettres.");
+                }
+
+                return new String[]{nom, pays, ville};
+            } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(
                         this,
-                        "Tous les champs doivent être remplis.",
+                        ex.getMessage(),
                         "Erreur",
                         JOptionPane.ERROR_MESSAGE
                 );
                 return null;
             }
-
-            return new String[]{nom, pays, ville};
         }
 
         return null;

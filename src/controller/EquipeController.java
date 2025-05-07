@@ -47,11 +47,13 @@ public final class EquipeController {
         }
 
         String selectedEquipeName = equipeListModel.getElementAt(selectedIndex);
-        Equipe equipe = model.getEquipes().stream()
-                .filter(e -> e.getNom().equals(selectedEquipeName))
-                .findFirst()
-                .orElse(null);
-
+        Equipe equipe = null;
+        for (Equipe e : model.getEquipes()) {
+            if (e.getNom().equals(selectedEquipeName)) {
+                equipe = e;
+                break;
+            }
+        }
         if (equipe == null) {
             mainFrame.showMessageDialog("Équipe introuvable.", JOptionPane.ERROR_MESSAGE);
             return;
@@ -82,11 +84,13 @@ public final class EquipeController {
         }
 
         String equipeName = equipeListModel.getElementAt(selectedIndex);
-        Equipe equipe = model.getEquipes().stream()
-                .filter(e -> e.getNom().equals(equipeName))
-                .findFirst()
-                .orElse(null);
-
+        Equipe equipe = null;
+        for (Equipe e : model.getEquipes()) {
+            if (e.getNom().equals(equipeName)) {
+                equipe = e;
+                break;
+            }
+        }
         if (equipe != null && mainFrame.showConfirmationDialog("Êtes-vous sûr de vouloir supprimer l'équipe : " + equipe.getNom() + " ?")) {
             model.deleteEquipe(equipe);
             equipeListModel.remove(selectedIndex);

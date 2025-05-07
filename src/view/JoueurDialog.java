@@ -2,8 +2,9 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class JoueurDialog extends JDialog {
     private JTextField nomField;
@@ -20,7 +21,7 @@ public class JoueurDialog extends JDialog {
         super(parent, "Joueur", true);
         initializeDialog();
 
-        // Si des données existent, les pré-remplir
+        // Si des données existent, les préremplir
         if (joueurInfo != null) {
             nomField.setText(joueurInfo[0]);
             prenomField.setText(joueurInfo[1]);
@@ -84,20 +85,14 @@ public class JoueurDialog extends JDialog {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                confirmed = true;
-                dispose();
-            }
+        okButton.addActionListener(e -> {
+            confirmed = true;
+            dispose();
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                confirmed = false;
-                dispose();
-            }
+        cancelButton.addActionListener(e -> {
+            confirmed = false;
+            dispose();
         });
     }
 
@@ -113,14 +108,40 @@ public class JoueurDialog extends JDialog {
                 int numero = Integer.parseInt(numeroField.getText().trim());
                 int anneeRejoint = Integer.parseInt(anneeRejointField.getText().trim());
 
-                if (nom.isEmpty() || prenom.isEmpty() || dateNaissance.isEmpty() || poste.isEmpty()) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Tous les champs doivent être remplis.",
-                            "Erreur",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    return null;
+                // Vérifications
+                if (nom.length() < 3) {
+                    throw new IllegalArgumentException("Le nom doit contenir au moins 3 caractères.");
+                }
+                if (prenom.length() < 3) {
+                    throw new IllegalArgumentException("Le prénom doit contenir au moins 3 caractères.");
+                }
+                if (poste.length() < 3) {
+                    throw new IllegalArgumentException("Le poste doit contenir au moins 3 caractères.");
+                }
+                if (taille < 150 || taille > 250) {
+                    throw new IllegalArgumentException("La taille doit être comprise entre 150 cm et 250 cm.");
+                }
+                if (poids < 50 || poids > 150) {
+                    throw new IllegalArgumentException("Le poids doit être compris entre 50 kg et 150 kg.");
+                }
+
+                // Vérification de la date de naissance
+                LocalDate naissanceDate;
+                try {
+                    naissanceDate = LocalDate.parse(dateNaissance, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                } catch (DateTimeParseException ex) {
+                    throw new IllegalArgumentException("La date de naissance doit être au format yyyy-MM-dd.");
+                }
+                if (naissanceDate.isAfter(LocalDate.now())) {
+                    throw new IllegalArgumentException("La date de naissance ne peut pas être dans le futur.");
+                }
+                if (naissanceDate.getYear() < 1960) {
+                    throw new IllegalArgumentException("L'année de naissance ne peut pas être avant 1800.");
+                }
+
+                // Vérification de l'année de rejoint
+                if (anneeRejoint < naissanceDate.getYear() + 18) {
+                    throw new IllegalArgumentException("L'année de rejoint doit être au moins 18 ans après la date de naissance.");
                 }
 
                 return new String[]{
@@ -129,12 +150,10 @@ public class JoueurDialog extends JDialog {
                         poste, String.valueOf(numero), String.valueOf(anneeRejoint)
                 };
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Les champs numériques doivent contenir des nombres valides.",
-                        "Erreur",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                JOptionPane.showMessageDialog(this, "Les champs numériques doivent contenir des nombres valides.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                return null;
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
                 return null;
             }
         }

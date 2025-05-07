@@ -36,7 +36,12 @@ public class DAOEquipe implements IDAOEquipe {
 
     @Override
     public Equipe getEquipeById(int id) {
-        return equipes.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
+        for (Equipe equipe : equipes) {
+            if (equipe.getId() == id) {
+                return equipe;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -192,10 +192,6 @@ public class MainFrame {
         return equipeList.getSelectedIndex();
     }
 
-    public int getEquipeIdByIndex(int index) {
-        return equipeController.getEquipeIdByIndex(index);
-    }
-
     public EquipeController getEquipeController() {
         return equipeController;
     }

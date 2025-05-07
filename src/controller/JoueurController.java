@@ -78,10 +78,13 @@ public final class JoueurController {
         }
 
         int joueurId = (int) joueurTableModel.getValueAt(selectedRow, 0);
-        Joueur joueur = equipe.getJoueurs().stream()
-                .filter(j -> j.getId() == joueurId)
-                .findFirst()
-                .orElse(null);
+        Joueur joueur = null;
+        for (Joueur j : equipe.getJoueurs()) {
+            if (j.getId() == joueurId) {
+                joueur = j;
+                break;
+            }
+        }
 
         if (joueur == null) {
             mainFrame.showMessageDialog("Joueur introuvable.", JOptionPane.ERROR_MESSAGE);
