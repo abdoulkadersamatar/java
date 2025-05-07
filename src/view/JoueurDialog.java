@@ -118,12 +118,6 @@ public class JoueurDialog extends JDialog {
                 if (poste.length() < 3) {
                     throw new IllegalArgumentException("Le poste doit contenir au moins 3 caractères.");
                 }
-                if (taille < 150 || taille > 250) {
-                    throw new IllegalArgumentException("La taille doit être comprise entre 150 cm et 250 cm.");
-                }
-                if (poids < 50 || poids > 150) {
-                    throw new IllegalArgumentException("Le poids doit être compris entre 50 kg et 150 kg.");
-                }
 
                 // Vérification de la date de naissance
                 LocalDate naissanceDate;
@@ -135,12 +129,12 @@ public class JoueurDialog extends JDialog {
                 if (naissanceDate.isAfter(LocalDate.now())) {
                     throw new IllegalArgumentException("La date de naissance ne peut pas être dans le futur.");
                 }
-                if (naissanceDate.getYear() < 1960) {
+                if (naissanceDate.getYear() < 1940) {
                     throw new IllegalArgumentException("L'année de naissance ne peut pas être avant 1800.");
                 }
 
                 // Vérification de l'année de rejoint
-                if (anneeRejoint < naissanceDate.getYear() + 18) {
+                if (anneeRejoint < naissanceDate.getYear() + 8) {
                     throw new IllegalArgumentException("L'année de rejoint doit être au moins 18 ans après la date de naissance.");
                 }
 
