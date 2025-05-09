@@ -1,36 +1,25 @@
 package view;
 
 import model.Joueur;
+import model.Statistique;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
 
 public class MatchStatsPage extends JFrame {
 
     private static final String[] COLUMNS = {
-            "Joueur", "3pts", "2pts", "1pt", "Total Pts", "Rebonds", "Assists", "Fautes", "Blocs", "Contres"
+            "Joueur", "3pts", "2pts", "1pt", "Total Pts", "Rebonds", "Assists", "Fautes", "Contres"
     };
 
-    private static final Object[][] SAMPLE_DATA = {
-            {"Joueur 1", 2, 4, 3, 17, 5, 2, 1, 1, 0},
-            {"Joueur 2", 1, 3, 2, 11, 4, 3, 2, 0, 1},
-            {"Joueur 3", 3, 2, 5, 16, 6, 8, 0, 0, 2},
-            {"Joueur 1", 2, 4, 3, 17, 5, 2, 1, 1, 0},
-            {"Joueur 2", 1, 3, 2, 11, 4, 3, 2, 0, 1},
-            {"Joueur 3", 3, 2, 5, 16, 6, 8, 0, 0, 2},
-            {"Joueur 1", 2, 4, 3, 17, 5, 2, 1, 1, 0},
-            {"Joueur 2", 1, 3, 2, 11, 4, 3, 2, 0, 1},
-            {"Joueur 3", 3, 2, 5, 16, 6, 8, 0, 0, 2},
-            {"Joueur 1", 2, 4, 3, 17, 5, 2, 1, 1, 0},
-            {"Joueur 2", 1, 3, 2, 11, 4, 3, 2, 0, 1},
-            {"Joueur 3", 3, 2, 5, 16, 6, 8, 0, 0, 2},
+    public MatchStatsPage(String equipeNom, List<Joueur> joueurs) {
+        // Tri des joueurs par points marqués
+        joueurs.sort(Comparator.comparingInt(j -> j.getStatistique().getTotalPoints()));
 
-    };
-
-    public MatchStatsPage() {
-        setTitle("Résumé du match - ÉQUIPE A");
+        setTitle("Résumé du match - " + equipeNom);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1000, 700);
         setLocationRelativeTo(null);
@@ -38,13 +27,58 @@ public class MatchStatsPage extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(new Color(0, 71, 27)); // vert Bucks
 
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1));
+        headerPanel.setBackground(new Color(0, 71, 27)); // même couleur que le fond
+
         JLabel titleLabel = new JLabel("Résumé des statistiques du match", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        headerPanel.add(titleLabel);
 
-        JTable table = new JTable(new DefaultTableModel(SAMPLE_DATA, COLUMNS));
+        JLabel equipeLabel = new JLabel("Équipe : " + equipeNom, SwingConstants.CENTER);
+        equipeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        equipeLabel.setForeground(Color.WHITE);
+        equipeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        headerPanel.add(equipeLabel);
+
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        // === Tableau des statistiques ===
+        DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0);
+        int totalPoints = 0, totalRebonds = 0, totalAssists = 0, totalFautes = 0, totalContres = 0;
+        int total3pts = 0, total2pts = 0, total1pt = 0;
+
+        for (Joueur joueur : joueurs) {
+            int _3pts = joueur.getStatistique().getStat("3PTS");
+            int _2pts = joueur.getStatistique().getStat("2PTS");
+            int _1pt = joueur.getStatistique().getStat("1PT");
+            int rebonds = joueur.getStatistique().getStat("rebonds");
+            int assists = joueur.getStatistique().getStat("assists");
+            int fautes = joueur.getStatistique().getStat("fautes");
+            int contres = joueur.getStatistique().getStat("contres");
+            int total = joueur.getStatistique().getTotalPoints();
+
+            total3pts += _3pts;
+            total2pts += _2pts;
+            total1pt += _1pt;
+            totalPoints += total;
+            totalRebonds += rebonds;
+            totalAssists += assists;
+            totalFautes += fautes;
+            totalContres += contres;
+
+            tableModel.addRow(new Object[]{
+                    joueur.getNom() + " (N°" + joueur.getNumero() + ")",
+                    _3pts, _2pts, _1pt, total, rebonds, assists, fautes, contres
+            });
+        }
+
+        JTable table = new JTable(tableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Rendre le tableau non modifiable
+            }
+        };
         table.setRowHeight(35);
         table.setFont(new Font("Arial", Font.PLAIN, 16));
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 18));
@@ -55,18 +89,27 @@ public class MatchStatsPage extends JFrame {
         scrollPane.setPreferredSize(new Dimension(900, 300));
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        //Stats Totales
+        // === Calcul des pourcentages ===
+        int totalTirs = total3pts + total2pts + total1pt;
+        String pourcentage3pts = totalTirs > 0 ? String.format("%.2f%%", (total3pts * 100.0) / totalTirs) : "0%";
+        String pourcentage2pts = totalTirs > 0 ? String.format("%.2f%%", (total2pts * 100.0) / totalTirs) : "0%";
+        String pourcentage1pt = totalTirs > 0 ? String.format("%.2f%%", (total1pt * 100.0) / totalTirs) : "0%";
+
+
+
+        // === Cartes de statistiques ===
         JPanel statsPanel = new JPanel();
         statsPanel.setLayout(new GridLayout(2, 3, 10, 10));
         statsPanel.setBackground(new Color(255, 255, 255));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        statsPanel.add(createStatCard("Total points", "84"));
-        statsPanel.add(createStatCard("Total fautes", "15"));
-        statsPanel.add(createStatCard("Total rebonds", "39"));
-        statsPanel.add(createStatCard("% 3pts", "38%"));
-        statsPanel.add(createStatCard("% 2pts", "54%"));
-        statsPanel.add(createStatCard("% lancers-francs", "72%"));
+        statsPanel.add(createStatCard("Total points", String.valueOf(totalPoints)));
+        statsPanel.add(createStatCard("Total fautes", String.valueOf(totalFautes)));
+        statsPanel.add(createStatCard("Total Rebonds ", String.valueOf(totalFautes)));
+
+        statsPanel.add(createStatCard("% 3pts", pourcentage3pts));
+        statsPanel.add(createStatCard("% 2pts", pourcentage2pts));
+        statsPanel.add(createStatCard("% lancers-francs", pourcentage1pt));
 
         JPanel statsContainer = new JPanel(new BorderLayout());
         statsContainer.add(statsPanel, BorderLayout.CENTER);
@@ -76,9 +119,6 @@ public class MatchStatsPage extends JFrame {
         add(mainPanel);
         setMinimumSize(new Dimension(800, 600));
         setVisible(true);
-    }
-
-    public MatchStatsPage(String nom, List<Joueur> joueurs) {
     }
 
     private JPanel createStatCard(String title, String value) {
@@ -99,7 +139,5 @@ public class MatchStatsPage extends JFrame {
         return panel;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(MatchStatsPage::new);
-    }
+
 }

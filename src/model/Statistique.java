@@ -1,6 +1,8 @@
 package model;
 import model.dao.IStatistique;
 
+import java.util.List;
+
 public class Statistique implements IStatistique {
     private int _1PT;
     private int _2PTS;
@@ -157,5 +159,7 @@ public class Statistique implements IStatistique {
         assist = 0;
         Contre = 0;
     }
-}
 
+
+
+}

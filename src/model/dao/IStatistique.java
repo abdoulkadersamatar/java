@@ -1,5 +1,8 @@
 package model.dao;
 
+import model.Joueur;
+
+import java.util.List;
 import java.util.Map;
 
 public interface IStatistique {
