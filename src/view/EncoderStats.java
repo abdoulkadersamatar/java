@@ -14,8 +14,11 @@ public class EncoderStats extends JFrame {
 
     private static final String[] COLUMNS = {"Joueur", "1PT", "2PTS", "3PTS", "fautes", "rebonds", "assists", "contres", "Total"};
 
-    private JTable table;
-    private List<Joueur> joueurs;
+    public JTable table; // Champ public
+    public JButton plusBtn; // Champ public
+    public JButton minusBtn; // Champ public
+    public JButton statsBtn; // Champ public
+    public List<Joueur> joueurs; // Champ public
 
     public EncoderStats(String equipeNom, List<Joueur> joueurs) {
         this.joueurs = joueurs; // Stocker la liste des joueurs
@@ -62,9 +65,9 @@ public class EncoderStats extends JFrame {
         JPanel controlPanel = new JPanel();
         controlPanel.setBackground(GREEN_DARK);
 
-        JButton plusBtn = new JButton("+");
-        JButton minusBtn = new JButton("-");
-        JButton statsBtn = new JButton("Voir les stats finales");
+        plusBtn = new JButton("+");
+        minusBtn = new JButton("-");
+        statsBtn = new JButton("Voir les stats finales");
 
         styleButton(plusBtn);
         styleButton(minusBtn);
@@ -75,50 +78,6 @@ public class EncoderStats extends JFrame {
         controlPanel.add(statsBtn);
 
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
-
-        // === Gestion des événements ===
-        plusBtn.addActionListener(e -> {
-            int selectedRow = table.getSelectedRow();
-            int selectedColumn = table.getSelectedColumn();
-            if (selectedRow >= 0 && selectedColumn > 0 && selectedColumn < COLUMNS.length - 1) { // Vérifie que la colonne est valide
-                Joueur joueur = joueurs.get(selectedRow);
-                String typeStat = COLUMNS[selectedColumn]; // Récupère le type de statistique à partir de l'en-tête de colonne
-                joueur.getStatistique().incrementer(typeStat); // Incrémente la statistique correspondante
-                int updatedValue = joueur.getStatistique().getStat(typeStat); // Récupère la nouvelle valeur
-                table.setValueAt(updatedValue, selectedRow, selectedColumn); // Met à jour la cellule correspondante
-
-                // Met à jour le total des points
-                int totalPoints = joueur.getStatistique().getTotalPoints();
-                table.setValueAt(totalPoints, selectedRow, COLUMNS.length - 1); // Colonne "Total"
-            } else {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une cellule valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        minusBtn.addActionListener(e -> {
-            int selectedRow = table.getSelectedRow();
-            int selectedColumn = table.getSelectedColumn();
-            if (selectedRow >= 0 && selectedColumn > 0 && selectedColumn < COLUMNS.length - 1) { // Vérifie que la colonne est valide
-                Joueur joueur = joueurs.get(selectedRow);
-                String typeStat = COLUMNS[selectedColumn]; // Récupère le type de statistique à partir de l'en-tête de colonne
-                joueur.getStatistique().decrementer(typeStat); // Décrémente la statistique correspondante
-                int updatedValue = joueur.getStatistique().getStat(typeStat); // Récupère la nouvelle valeur
-                table.setValueAt(updatedValue, selectedRow, selectedColumn); // Met à jour la cellule correspondante
-
-                // Met à jour le total des points
-                int totalPoints = joueur.getStatistique().getTotalPoints();
-                table.setValueAt(totalPoints, selectedRow, COLUMNS.length - 1); // Colonne "Total"
-            } else {
-                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une cellule valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        statsBtn.addActionListener(e -> {
-            for (int i = 0; i < joueurs.size(); i++) {
-                Joueur joueur = joueurs.get(i);
-                System.out.println("Statistiques de " + joueur.getNom() + ": " + joueur.getStatistique());
-            }
-            JOptionPane.showMessageDialog(this, "Statistiques sauvegardées avec succès !", "Information", JOptionPane.INFORMATION_MESSAGE);
-        });
 
         add(mainPanel);
         setVisible(true);

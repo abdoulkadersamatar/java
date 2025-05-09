@@ -84,8 +84,6 @@ public class Joueur extends Personne {
         return statistique;
     }
 
-    public void setStatistique(IStatistique statistique) {
-        this.statistique = statistique;
-    }
+
 
 }

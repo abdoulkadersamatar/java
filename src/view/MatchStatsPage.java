@@ -1,8 +1,11 @@
 package view;
 
+import model.Joueur;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class MatchStatsPage extends JFrame {
 
@@ -73,6 +76,9 @@ public class MatchStatsPage extends JFrame {
         add(mainPanel);
         setMinimumSize(new Dimension(800, 600));
         setVisible(true);
+    }
+
+    public MatchStatsPage(String nom, List<Joueur> joueurs) {
     }
 
     private JPanel createStatCard(String title, String value) {
