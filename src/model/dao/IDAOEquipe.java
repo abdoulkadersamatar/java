@@ -1,6 +1,7 @@
 package model.dao;
 
 import model.Equipe;
+import model.Joueur;
 import java.util.List;
 
 public interface IDAOEquipe {
@@ -9,4 +10,6 @@ public interface IDAOEquipe {
     boolean deleteEquipe(Equipe equipe);
     Equipe getEquipeById(int id);
     List<Equipe> getEquipes();
+    List<Joueur> getJoueursByEquipeId(int equipeId);
+
 }

@@ -1,22 +1,26 @@
 package view;
 
+import model.Joueur;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class EncoderStats extends JFrame {
     private static final Color GREEN_DARK = new Color(0x00471B);
     private static final Color GREEN_LIGHT = new Color(0x007A33);
     private static final Color WHITE = Color.WHITE;
 
-    private static final int NUM_PLAYERS = 12;
-    private static final String[] COLUMNS = {
-            "Joueur", "REBOND", "BLOCS", "3pts", "2pts", "fautes", "assists", "contres", "1pts", "totalpoints"
-    };
+    private static final String[] COLUMNS = {"Joueur", "1PT", "2PTS", "3PTS", "fautes", "rebonds", "assists", "contres", "Total"};
 
-    public EncoderStats() {
-        setTitle("ÉQUIPE A");
-        setSize(1000, 600);
+    private JTable table;
+    private List<Joueur> joueurs;
+
+    public EncoderStats(String equipeNom, List<Joueur> joueurs) {
+        this.joueurs = joueurs; // Stocker la liste des joueurs
+        setTitle(equipeNom);
+        setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -24,24 +28,22 @@ public class EncoderStats extends JFrame {
         mainPanel.setBackground(GREEN_DARK);
 
         // === En-tête ===
-        JLabel titleLabel = new JLabel("ÉQUIPE A", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Équipe : " + equipeNom, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
         titleLabel.setForeground(WHITE);
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
         // === Tableau ===
-        String[][] data = new String[NUM_PLAYERS][COLUMNS.length];
-        for (int i = 0; i < NUM_PLAYERS; i++) {
-            data[i][0] = "Joueur " + (i + 1); // colonne joueur
-            for (int j = 1; j < COLUMNS.length; j++) {
-                data[i][j] = "-"; // colonnes vides
-            }
+        DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0);
+        for (Joueur joueur : joueurs) {
+            String joueurInfo = joueur.getNom() + " (N°" + joueur.getNumero() + ")";
+            tableModel.addRow(new Object[]{joueurInfo, 0, 0, 0, 0, 0, 0, 0, 0});
         }
 
-        JTable table = new JTable(new DefaultTableModel(data, COLUMNS)) {
+        table = new JTable(tableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return column > 0; // Seules les colonnes des stats sont éditables
             }
         };
         table.setRowHeight(40);
@@ -74,6 +76,50 @@ public class EncoderStats extends JFrame {
 
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
 
+        // === Gestion des événements ===
+        plusBtn.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            int selectedColumn = table.getSelectedColumn();
+            if (selectedRow >= 0 && selectedColumn > 0 && selectedColumn < COLUMNS.length - 1) { // Vérifie que la colonne est valide
+                Joueur joueur = joueurs.get(selectedRow);
+                String typeStat = COLUMNS[selectedColumn]; // Récupère le type de statistique à partir de l'en-tête de colonne
+                joueur.getStatistique().incrementer(typeStat); // Incrémente la statistique correspondante
+                int updatedValue = joueur.getStatistique().getStat(typeStat); // Récupère la nouvelle valeur
+                table.setValueAt(updatedValue, selectedRow, selectedColumn); // Met à jour la cellule correspondante
+
+                // Met à jour le total des points
+                int totalPoints = joueur.getStatistique().getTotalPoints();
+                table.setValueAt(totalPoints, selectedRow, COLUMNS.length - 1); // Colonne "Total"
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une cellule valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        minusBtn.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            int selectedColumn = table.getSelectedColumn();
+            if (selectedRow >= 0 && selectedColumn > 0 && selectedColumn < COLUMNS.length - 1) { // Vérifie que la colonne est valide
+                Joueur joueur = joueurs.get(selectedRow);
+                String typeStat = COLUMNS[selectedColumn]; // Récupère le type de statistique à partir de l'en-tête de colonne
+                joueur.getStatistique().decrementer(typeStat); // Décrémente la statistique correspondante
+                int updatedValue = joueur.getStatistique().getStat(typeStat); // Récupère la nouvelle valeur
+                table.setValueAt(updatedValue, selectedRow, selectedColumn); // Met à jour la cellule correspondante
+
+                // Met à jour le total des points
+                int totalPoints = joueur.getStatistique().getTotalPoints();
+                table.setValueAt(totalPoints, selectedRow, COLUMNS.length - 1); // Colonne "Total"
+            } else {
+                JOptionPane.showMessageDialog(this, "Veuillez sélectionner une cellule valide.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        statsBtn.addActionListener(e -> {
+            for (int i = 0; i < joueurs.size(); i++) {
+                Joueur joueur = joueurs.get(i);
+                System.out.println("Statistiques de " + joueur.getNom() + ": " + joueur.getStatistique());
+            }
+            JOptionPane.showMessageDialog(this, "Statistiques sauvegardées avec succès !", "Information", JOptionPane.INFORMATION_MESSAGE);
+        });
+
         add(mainPanel);
         setVisible(true);
     }
@@ -84,9 +130,5 @@ public class EncoderStats extends JFrame {
         button.setForeground(WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(EncoderStats::new);
     }
 }

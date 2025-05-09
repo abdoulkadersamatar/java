@@ -2,6 +2,7 @@ package view;
 
 import controller.EquipeController;
 import controller.JoueurController;
+import controller.StatsController;
 import model.dao.DAOEquipe;
 import model.dao.IDAOEquipe;
 
@@ -168,6 +169,11 @@ public class MainFrame {
         ajouterJoueurBtn.addActionListener(e -> joueurController.addJoueur());
         modifierJoueurBtn.addActionListener(e -> joueurController.editJoueur(joueurTable.getSelectedRow()));
         supprimerJoueurBtn.addActionListener(e -> joueurController.deleteJoueur(joueurTable.getSelectedRow()));
+
+        // Connexion du bouton "Suivant"
+        StatsController statsController = new StatsController(this);
+        // Connexion du bouton "Suivant"
+        suivantButton.addActionListener(e -> statsController.handleOpenEncoderStats());
 
         // Ajout d'un écouteur pour afficher les joueurs de l'équipe sélectionnée
         equipeList.addListSelectionListener(e -> {

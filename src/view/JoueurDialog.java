@@ -133,10 +133,6 @@ public class JoueurDialog extends JDialog {
                     throw new IllegalArgumentException("L'année de naissance ne peut pas être avant 1800.");
                 }
 
-                // Vérification de l'année de rejoint
-                if (anneeRejoint < naissanceDate.getYear() + 8) {
-                    throw new IllegalArgumentException("L'année de rejoint doit être au moins 18 ans après la date de naissance.");
-                }
 
                 return new String[]{
                         nom, prenom, dateNaissance,

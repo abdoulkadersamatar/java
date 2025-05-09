@@ -1,6 +1,7 @@
 package model;
+import model.dao.IStatistique;
 
-public class Statistique {
+public class Statistique implements IStatistique {
     private int _1PT;
     private int _2PTS;
     private int _3PTS;
@@ -104,4 +105,57 @@ public class Statistique {
                 ", pointsTotal=" + getTotalPoints() +
                 '}';
     }
+
+    @Override
+    public void incrementer(String typeStat) {
+        switch (typeStat) {
+            case "1PT" -> _1PT++;
+            case "2PTS" -> _2PTS++;
+            case "3PTS" -> _3PTS++;
+            case "fautes" -> fautes++;
+            case "rebonds" -> rebonds++;
+            case "assists" -> assist++;
+            case "contres" -> Contre++;
+        }
+    }
+
+    @Override
+    public void decrementer(String typeStat) {
+        switch (typeStat) {
+            case "1PT" -> _1PT--;
+            case "2PTS" -> _2PTS--;
+            case "3PTS" -> _3PTS--;
+            case "fautes" -> fautes--;
+            case "rebonds" -> rebonds--;
+            case "assists" -> assist--;
+            case "contres" -> Contre--;
+        }
+    }
+
+
+    @Override
+    public int getStat(String typeStat) {
+        return switch (typeStat) {
+            case "1PT" -> _1PT;
+            case "2PTS" -> _2PTS;
+            case "3PTS" -> _3PTS;
+            case "fautes" -> fautes;
+            case "rebonds" -> rebonds;
+            case "assists" -> assist;
+            case "contres" -> Contre;
+            default -> 0;
+        };
+    }
+
+    @Override
+    public void reinitialiser() {
+        _1PT = 0;
+        _2PTS = 0;
+        _3PTS = 0;
+        fautes = 0;
+        rebonds = 0;
+        assist = 0;
+        Contre = 0;
+    }
 }
+

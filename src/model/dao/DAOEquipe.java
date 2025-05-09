@@ -2,7 +2,9 @@
 package model.dao;
 
 import model.Equipe;
+import model.Joueur;
 import util.IdGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,4 +50,15 @@ public class DAOEquipe implements IDAOEquipe {
     public List<Equipe> getEquipes() {
         return new ArrayList<>(equipes);
     }
+
+    // Nouvelle méthode pour récupérer les joueurs d'une équipe
+    public List<Joueur> getJoueursByEquipeId(int equipeId) {
+        Equipe equipe = getEquipeById(equipeId);
+        if (equipe != null) {
+            return equipe.getJoueurs();
+        }
+        return new ArrayList<>(); // Retourne une liste vide si l'équipe n'existe pas
+    }
+
+
 }
