@@ -24,7 +24,7 @@ public class EncoderStats extends JFrame {
         this.joueurs = joueurs; // Stocker la liste des joueurs
         setTitle(equipeNom);
         setSize(800, 600);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel(new BorderLayout());

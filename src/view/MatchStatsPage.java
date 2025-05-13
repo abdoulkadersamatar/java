@@ -16,11 +16,22 @@ public class MatchStatsPage extends JFrame {
     };
 
     public MatchStatsPage(String equipeNom, List<Joueur> joueurs) {
+
+        //menu de sauvegarde et d'importation
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        JMenu fileMenu = new JMenu("Fichier");
+        JMenuItem importItem = new JMenuItem("Importer");
+        JMenuItem exportItem = new JMenuItem("Exporter");
+        fileMenu.add(importItem);
+        fileMenu.add(exportItem);
+        menuBar.add(fileMenu);
         // Tri des joueurs par points marqués
         joueurs.sort(Comparator.comparingInt(j -> j.getStatistique().getTotalPoints()));
 
         setTitle("Résumé du match - " + equipeNom);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 700);
         setLocationRelativeTo(null);
 
