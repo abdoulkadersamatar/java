@@ -33,7 +33,7 @@ public class MainFrame {
         // ================================
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
-
+//MODIFIER
         JMenu fileMenu = new JMenu("Fichier");
         JMenuItem importItem = new JMenuItem("Importer");
         JMenuItem exportItem = new JMenuItem("Exporter");
